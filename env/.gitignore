@@ -1,0 +1,4 @@
+# created by virtualenv automatically
+.env.local
+node_modules
+READNE.md
