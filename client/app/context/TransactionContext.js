@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, createContext } from 'react';
-import { BrowserProvider, Contract } from 'ethers';
+import { ethers } from 'ethers'; // Import directly from ethers
 import { contractABI, contractAddress } from '../utils/constants';
 
 export const TransactionContext = createContext();
@@ -17,9 +17,10 @@ const getEthereumContract = () => {
     return null;
   }
 
-  const provider = new BrowserProvider(ethereum); // Use BrowserProvider for ethers.js v6.x
+  // Use ethers.BrowserProvider for ethers.js v6
+  const provider = new ethers.BrowserProvider(ethereum);
   const signer = provider.getSigner();
-  const transactionContract = new Contract(contractAddress, contractABI, signer); // Use Contract directly for ethers.js v6.x
+  const transactionContract = new ethers.Contract(contractAddress, contractABI, signer);
 
   console.log({
     provider,
@@ -57,18 +58,24 @@ export const TransactionProvider = ({ children }) => {
 
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 
-      setCurrentAccount(accounts[0]);
+      if (accounts.length) {
+        setCurrentAccount(accounts[0]);
+        console.log("Wallet connected:", accounts[0]);
+        getEthereumContract();
+      }
     } catch (error) {
       console.error(error);
     }
   };
+
+ 
 
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
 
   return (
-    <TransactionContext.Provider value={{ connectWallet}}>
+    <TransactionContext.Provider value={{ connectWallet , currentAccount }}>
       {children}
     </TransactionContext.Provider>
   );

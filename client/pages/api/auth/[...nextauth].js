@@ -1,10 +1,11 @@
 import NextAuth from 'next-auth';
+import 'dotenv/config';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import clientPromise from '../../../lib/mongodb';
-import { findUserByEmail, createUser } from '../../../lib/userUtils';
-import { verifyPassword } from '../../../lib/authUtils'; // Assuming verifyPassword is in authUtils
+import { findUserByUsernameOrEmail } from '../../../lib/userUtils';
+import { verifyPassword } from '../../../lib/authUtils';
 
 export default NextAuth({
   providers: [
@@ -15,15 +16,20 @@ export default NextAuth({
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
+        identifier: { label: "Username or Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const user = await findUserByEmail(credentials.email);
-        if (user && await verifyPassword(credentials.password, user.password)) {
-          return user;
+        const user = await findUserByUsernameOrEmail(credentials.identifier);
+        if (!user) {
+          throw new Error('Email or username doesn\'t exist!');
         }
-        return null;
+        const isPasswordValid = await verifyPassword(credentials.password, user.password);
+        if (!isPasswordValid) {
+          throw new Error('Incorrect password!');
+        }
+        // Return user with username included
+        return { id: user._id, email: user.email, username: user.username };
       },
     }),
   ],
@@ -32,38 +38,27 @@ export default NextAuth({
     signIn: '/login',
   },
   callbacks: {
-    async signIn({ user, account }) {
-      if (account.provider === 'google') {
-        let existingUser = await findUserByEmail(user.email);
-
-        if (!existingUser) {
-          // If the user does not exist, create a new user
-          existingUser = await createUser({
-            email: user.email,
-            name: user.name,
-            image: user.image,
-          });
-        }
-
-        // Check if the account is properly linked
-        if (existingUser) {
-          return true;
-        }
-        return false;
-      }
-      return true;
-    },
-    async session({ session, user }) {
-      if (user) {
-        session.user = user;
+    async session({ session, token }) {
+      // Add username to session
+      if (token) {
+        session.user.id = token.id;
+        session.user.username = token.username;
       }
       return session;
+    },
+    async jwt({ token, user }) {
+      // Add username to token
+      if (user) {
+        token.id = user.id;
+        token.username = user.username;
+      }
+      return token;
     },
     async redirect({ url, baseUrl }) {
       return baseUrl;
     },
   },
   session: {
-    strategy: 'jwt', // Use JWT strategy
+    strategy: 'jwt',
   },
 });

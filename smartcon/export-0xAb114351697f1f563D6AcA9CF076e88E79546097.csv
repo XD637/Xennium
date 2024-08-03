@@ -1,0 +1,2 @@
+﻿Transaction Hash,Status,Method,Blockno,DateTime (UTC),From,From_Nametag,To,To_Nametag,Amount,Value (USD),Txn Fee
+"0xc043724482ca4b5ff891ef2d3a1df5c8f4b6d8187d053a9753feb22b3e63da39","Success","0x60806040","6422147","2024-08-02 10:36:24","0x9cd904ca87c78a365aeab1fbd3a8fdd8e63ce082","","Contract Creation","","0 ETH","$0.00","0.02182773"

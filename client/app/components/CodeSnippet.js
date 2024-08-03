@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FiCopy } from 'react-icons/fi';
 import { MdCheck } from 'react-icons/md';
 import { FaPython } from 'react-icons/fa';

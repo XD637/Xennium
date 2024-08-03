@@ -7,7 +7,7 @@ import { Inter } from "next/font/google";
 import Head from "next/head";
 import Script from 'next/script';
 import Navbar from "./components/Navbar";
-import { TransactionProvider } from "./context/TransactionContext"; 
+import { TransactionProvider } from "./context/TransactionContext";
 import { useEffect } from 'react';
 
 const inter = Inter({ subsets: ["latin"] });

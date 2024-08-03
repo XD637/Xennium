@@ -83,7 +83,7 @@ const Contact = () => {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gray-100">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6">
       <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Contact Us</h1>
         {responseMessage && (
